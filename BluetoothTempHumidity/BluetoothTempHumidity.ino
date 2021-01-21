@@ -72,14 +72,18 @@ void loop() {
   String temperature = String(temperatureC) + "C / " + String(temperatureF) + "F";
   Serial.println(temperature);
   Serial.println(humidity);
+  String DataToSend = "{\"humidity\": " + String(h) + ", \"temperatureC\": " + String(temperatureC) + ", \"temperatureF\": " + String(temperatureF) + "}";
+  Serial.println(DataToSend);
 
   if (Serial.available()) {
-    //SerialBT.write(Serial.read());
-    SerialBT.write(Serial.print(temperature));
+    SerialBT.write(Serial.print(DataToSend));
+    //SerialBT.write(Serial.print(temperature));
+    //SerialBT.write(Serial.print(humidity));
   }
   if (SerialBT.available()) {
-    //Serial.write(SerialBT.read());
-    Serial.write(SerialBT.print(temperature));
+    Serial.write(SerialBT.print(DataToSend));
+    //Serial.write(SerialBT.print(temperature));
+    //Serial.write(SerialBT.print(humidity));
   }
   delay(5000);
 }
