@@ -9,11 +9,11 @@ L'équipe est composée de :
 - Pierre BALLAND
 - Paul BAZIN
 
-###Objectif du projet
+### Objectif du projet
 Notre projet a pour but d'utiliser des capteurs connectés à un ESP32 qui transmet à AWS, via AWS Greengrass IoT sur une Raspberry Pi, les données reçues par ceux-ci.
 Ces données sont ensuite traitées et en fonction de celles-ci un actionneur pourrait augmenter la l'humidité par exemple.
 
-###Les composants
+### Les composants
 La liste des composants que nous avons utilisées est la suivante :
 - DS18B20 étanche
 - DHT11
@@ -23,5 +23,5 @@ La liste des composants que nous avons utilisées est la suivante :
 
 
 
-##Contactez-nous !
+## Contactez-nous !
 Vous pouvez nous contacter via l'adresse mail suivante : sensool22@gmail.com
