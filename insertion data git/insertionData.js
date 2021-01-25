@@ -64,7 +64,7 @@ exports.handler = async function(event, context, callback) {
     for (const key in event) {
         if(key != "time"){
             response = response + "Valeur trouve. "
-            var succes = await writeRecords("Test3", "TestTableName", key, JSON.stringify(event[key]), timestamp);
+            var succes = await writeRecords("Test3", "TestTableName", key, JSON.stringify(event[key]), Date.now.toString());
             response = response + "Ecriture envoye : key/" + key +" value/" + event[key] + " time/" + Date.now.toString() + succes +". ";
         }
     }
