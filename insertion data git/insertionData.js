@@ -17,10 +17,10 @@ exports.handler = async function(event, context, callback) {
 
     queryClient = new AWS.TimestreamQuery();
 
-    async function createTable(tableName) {
-        console.log("Creating Table");
+    async function createTable(database, tableName) {
+        console.log("Creation de table");
         const params = {
-            DatabaseName: "Test3",
+            DatabaseName: database,
             TableName: tableName,
             RetentionProperties: {
                 MemoryStoreRetentionPeriodInHours: 24,
@@ -36,9 +36,9 @@ exports.handler = async function(event, context, callback) {
             },
             (err) => {
                 if (err.code === 'ConflictException') {
-                    return ("Table " + tableName + " already exists on db Test3. Skipping creation.");
+                    return ("La table " + tableName + " existe deja sur " + database + ". Creation ignore.");
                 } else {
-                    return ("Error creating table " + tableName + " : " + err);
+                    return ("Erreur a la creation de la table " + tableName + " : " + err);
                 }
             }
         );
@@ -111,12 +111,12 @@ exports.handler = async function(event, context, callback) {
     for (const key in event) {
         if(key != "time" && key != "table"){
             response = response + "Valeur trouve. "
-            var succes_insert = await writeRecords("Test3", table, key, JSON.stringify(event[key]), timestamp);
+            var succes_insert = await writeRecords("Sensool", table, key, JSON.stringify(event[key]), timestamp);
             if (succes_insert.indexOf("The table " + table + " does not exist")!== -1){
                 response = response + "Creation de la table " + table +". ";
-                var succes_create = await createTable(table);
+                var succes_create = await createTable("Sensool", table);
                 response = response + "Creation envoye " + succes_create +". ";
-                succes_insert = await writeRecords("Test3", table, key, JSON.stringify(event[key]), timestamp);
+                succes_insert = await writeRecords("Sensool", table, key, JSON.stringify(event[key]), timestamp);
             }
             response = response + "Ecriture envoye : key/" + key +" value/" + event[key] + " time/" + timestamp + " table/" + table +". " + succes_insert +". ";
         }
