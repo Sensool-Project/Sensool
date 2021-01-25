@@ -60,12 +60,23 @@ exports.handler = async function(event, context, callback) {
     }
 
     var response = "";
+    var timestamp = "";
+    
+    if(event.time){
+        var time = new Date(event.time*1000);
+        timestamp = Date.parse(time).toString();
+        response = "Date : " + timestamp + " : " + time + ". ";
+    }
+    else {
+        response = "Le temps n'a pas été renseigné. ";
+        context.succeed(response);
+    }
 
     for (const key in event) {
         if(key != "time"){
             response = response + "Valeur trouve. "
-            var succes = await writeRecords("Test3", "TestTableName", key, JSON.stringify(event[key]), Date.now.toString());
-            response = response + "Ecriture envoye : key/" + key +" value/" + event[key] + " time/" + Date.now.toString() + succes +". ";
+            var succes = await writeRecords("Test3", "TestTableName", key, JSON.stringify(event[key]), timestamp);
+            response = response + "Ecriture envoye : key/" + key +" value/" + event[key] + " time/" + timestamp + succes +". ";
         }
     }
     context.succeed(response);
