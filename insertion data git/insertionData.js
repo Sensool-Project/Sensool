@@ -17,6 +17,34 @@ exports.handler = async function(event, context, callback) {
 
     queryClient = new AWS.TimestreamQuery();
 
+    async function createTable(tableName) {
+        console.log("Creating Table");
+        const params = {
+            DatabaseName: "Test3",
+            TableName: tableName,
+            RetentionProperties: {
+                MemoryStoreRetentionPeriodInHours: 24,
+                MagneticStoreRetentionPeriodInDays: 7
+            }
+        };
+    
+        const promise = writeClient.createTable(params).promise();
+    
+        var retour = await promise.then(
+            (data) => {
+                return ("Table : " + tableName + " cree.");
+            },
+            (err) => {
+                if (err.code === 'ConflictException') {
+                    return ("Table " + tableName + " already exists on db Test3. Skipping creation.");
+                } else {
+                    return ("Error creating table " + tableName + " : " + err);
+                }
+            }
+        );
+        return retour;
+    }
+
     async function writeRecords(database, table, nom, valeur, time) {
         console.log("Writing records");
 
@@ -61,7 +89,8 @@ exports.handler = async function(event, context, callback) {
 
     var response = "";
     var timestamp = "";
-    
+    var table = "";
+
     if(event.time){
         var time = new Date(event.time*1000);
         timestamp = Date.parse(time).toString();
@@ -71,12 +100,25 @@ exports.handler = async function(event, context, callback) {
         response = "Le temps n'a pas été renseigné. ";
         context.succeed(response);
     }
-
+    if(event.table){
+        table = event.table;
+        response = response + "Table : " + table + ". ";
+    }
+    else {
+        response = "La table n'a pas été renseignée. ";
+        context.succeed(response);
+    }
     for (const key in event) {
-        if(key != "time"){
+        if(key != "time" && key != "table"){
             response = response + "Valeur trouve. "
-            var succes = await writeRecords("Test3", "TestTableName", key, JSON.stringify(event[key]), timestamp);
-            response = response + "Ecriture envoye : key/" + key +" value/" + event[key] + " time/" + timestamp + succes +". ";
+            var succes_insert = await writeRecords("Test3", table, key, JSON.stringify(event[key]), timestamp);
+            if (succes_insert.indexOf("The table " + table + " does not exist")!== -1){
+                response = response + "Creation de la table " + table +". ";
+                var succes_create = await createTable(table);
+                response = response + "Creation envoye " + succes_create +". ";
+                succes_insert = await writeRecords("Test3", table, key, JSON.stringify(event[key]), timestamp);
+            }
+            response = response + "Ecriture envoye : key/" + key +" value/" + event[key] + " time/" + timestamp + " table/" + table +". " + succes_insert +". ";
         }
     }
     context.succeed(response);
