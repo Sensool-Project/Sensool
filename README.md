@@ -20,7 +20,9 @@ La liste des composants que nous avons utilisées est la suivante :
 - Raspberry Pi 3
 - ESP32
 
-
+### Timestream
+Pour utiliser timestream, connectez vous sur https://us-east-2.console.aws.amazon.com/timestream avec vos identifiant aws.
+Créez une base nommé "Sensool".
 
 
 ## Contactez-nous !
